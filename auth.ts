@@ -4,10 +4,21 @@ import { authConfig } from './auth.config'
 import { z } from 'zod'
 import { getStringFromBuffer } from './lib/utils'
 import { getUser } from './app/login/actions'
+import Google from "next-auth/providers/google"
 
-export const { auth, signIn, signOut } = NextAuth({
+
+export const { handlers: {GET, POST}, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      authorization: {
+        params: {
+          scope: 'openid email profile https://www.googleapis.com/auth/calendar'
+        }
+      }
+    }),
     Credentials({
       async authorize(credentials) {
         const parsedCredentials = z
